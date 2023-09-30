@@ -1,9 +1,10 @@
 const router = require("express").Router();
 const Post = require("../Models/Post");
 const User = require("../Models/User");
+const postController =require("../Controllers/postController");
+
 
 //create a post
-
 router.post("/", async (req, res) => {
   const newPost = new Post(req.body);
   try {
@@ -13,8 +14,8 @@ router.post("/", async (req, res) => {
     res.status(500).json(err);
   }
 });
-//update a post
 
+//update a post
 router.put("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -28,8 +29,8 @@ router.put("/:id", async (req, res) => {
     res.status(500).json(err);
   }
 });
-//delete a post
 
+//delete a post
 router.delete("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -43,13 +44,13 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json(err);
   }
 });
-//like / dislike a post
 
+//like / dislike a post
 router.put("/:id/like", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (!post.likes.includes(req.body.userId)) {
-      await post.updateOne({ $push: { likes: req.body.userId } });
+    if (!post.likes.includes(req.body.userId)) { //likes dediğimiz kısım post modelindeki likes
+      await post.updateOne({ $push: { likes: req.body.userId } });//daha önce o  post'a like atıp atmadığını kontrol edip ona göre push'luyor
       res.status(200).json("The post has been liked");
     } else {
       await post.updateOne({ $pull: { likes: req.body.userId } });
@@ -59,8 +60,8 @@ router.put("/:id/like", async (req, res) => {
     res.status(500).json(err);
   }
 });
-//get a post
 
+//get a post
 router.get("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -71,7 +72,6 @@ router.get("/:id", async (req, res) => {
 });
 
 //get timeline posts
-
 router.get("/timeline/all", async (req, res) => {
   try {
     const currentUser = await User.findById(req.body.userId);
